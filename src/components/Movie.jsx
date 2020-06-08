@@ -11,12 +11,25 @@ import CommentList from "./CommentList";
 
 class Movie extends Component {
   state = {
+    imdbID: "",
     selected: false,
+    comments: [],
     newComment: {
       comment: "",
       rate: 0,
       elementId: this.props.data.imdbID,
     },
+  };
+
+  fetchComments = async (movieID) => {
+    console.log("fetching comments for " + this.state.imdbID)
+    const commentsUrl = "https://striveschool.herokuapp.com/api/comments/";
+    const comments = await fetch(commentsUrl + movieID, {
+      headers: {
+        "Authorization": "Basic " + btoa("user17:6DJn4e5qbqb2a4D8")
+      },
+    }).then((response) => response.json());
+    this.setState({ comments });
   };
 
   submitComment = async (e) => {
@@ -25,10 +38,10 @@ class Movie extends Component {
     const response = await fetch(commentsUrl, {
       method: "POST",
       body: JSON.stringify(this.state.newComment),
-      headers: new Headers({
-        Authorization: "[INSERT_YOUR_AUTH_HERE]",
-        "Content-Type": "application/json",
-      }),
+      headers: {
+        "Authorization": "Basic " + btoa("user17:6DJn4e5qbqb2a4D8"),
+        "Content-Type": "application/json"
+      }
     });
     if (response.ok) {
       alert("Comment added");
@@ -64,8 +77,10 @@ class Movie extends Component {
           src={this.props.data.Poster}
           alt="movie"
           onClick={() => {
-            this.setState({ selected: !this.state.selected });
-            this.props.fetchComments(this.props.data.imdbID);
+            this.setState({ 
+              selected: !this.state.selected,
+              imdbID: this.props.data.imdbID
+            }, () => {this.fetchComments(this.state.imdbID)});
           }}
         />
         <Modal
@@ -77,54 +92,27 @@ class Movie extends Component {
           </Modal.Header>
           <Modal.Body>
             <div className="my-3">
-              {this.props.comments.length > 0 &&
-                this.props.comments[0].elementId === this.props.data.imdbID && (
-                  <CommentList comments={this.props.comments} />
+              {this.state.comments.length > 0 &&
+                this.state.comments[0].elementId === this.state.imdbID && (
+                  <CommentList key={this.state.imdbID + Math.random()* Math.random()} comments={this.state.comments} />
                 )}
               <div className="text-center">
                 <h5 className="my-3">Add a comment</h5>
                 <Form onSubmit={this.submitComment}>
                   <div className="my-3 text-center">
-                    <Form.Check
-                      inline
-                      label="1"
-                      type="radio"
-                      id="1"
-                      name="rating"
-                      onClick={this.handleRadioChange}
-                    />
-                    <Form.Check
-                      inline
-                      label="2"
-                      type="radio"
-                      id="2"
-                      name="rating"
-                      onClick={this.handleRadioChange}
-                    />
-                    <Form.Check
-                      inline
-                      label="3"
-                      type="radio"
-                      id="3"
-                      name="rating"
-                      onClick={this.handleRadioChange}
-                    />
-                    <Form.Check
-                      inline
-                      label="4"
-                      type="radio"
-                      id="4"
-                      name="rating"
-                      onClick={this.handleRadioChange}
-                    />
-                    <Form.Check
-                      inline
-                      label="5"
-                      type="radio"
-                      id="5"
-                      name="rating"
-                      onClick={this.handleRadioChange}
-                    />
+                    {
+                      [1,2,3,4,5].map(value => {
+                        return <Form.Check
+                          inline
+                          label={value}
+                          type="radio"
+                          id={value}
+                          name="rating"
+                          key={this.state.imdbID + "-rate-" + value}
+                          onClick={this.handleRadioChange}
+                        />
+                      })
+                    }
                   </div>
                   <InputGroup className="mb-3">
                     <FormControl

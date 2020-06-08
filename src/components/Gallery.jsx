@@ -16,8 +16,8 @@ const Gallery = ({ title, loading, fetchComments, comments, movies }) => (
             <Movie
               data={movie}
               key={movie.imdbID}
-              comments={comments}
-              fetchComments={fetchComments}
+              // comments={comments}
+              // fetchComments={fetchComments}
             />
           ))}
     </Row>

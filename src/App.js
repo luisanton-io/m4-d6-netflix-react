@@ -14,14 +14,18 @@ class App extends Component {
       starWarsMovies: [],
       searchedMovies: [],
       loading: true,
-      error: false,
-      comments: [],
+      error: false
+      // comments: [],
     };
   }
 
-  url = "http://www.omdbapi.com/?apikey=[INSERT_YOUR_API_KEY_HERE]";
+  url = "http://www.omdbapi.com/?apikey=2bcd7b88";
 
   componentDidMount = () => {
+    this.defaultView()
+  };
+
+  defaultView = () => {
     Promise.all([
       fetch(this.url + "&s=harry%20potter")
         .then((response) => response.json())
@@ -39,14 +43,16 @@ class App extends Component {
           this.setState({ starWarsMovies: responseObject.Search })
         ),
     ])
-      .then(() => this.setState({ loading: false }))
+      .then(() => this.setState({ loading: false, searchedMovies: [] }))
       .catch((err) => {
         this.setState({ error: true });
         console.log("An error has occurred:", err);
       });
-  };
+  }
 
   showSearchResult = (searchString) => {
+    console.log(this.state.searchedMovies)
+    if (searchString && searchString.length > 0)
     fetch(this.url + "&s=" + searchString)
       .then((response) => response.json())
       .then((responseObject) =>
@@ -54,21 +60,11 @@ class App extends Component {
       );
   };
 
-  fetchComments = async (movieID) => {
-    const commentsUrl = "https://striveschool.herokuapp.com/api/comments/";
-    const comments = await fetch(commentsUrl + movieID, {
-      headers: new Headers({
-        Authorization: "[INSERT_YOUR_AUTH_HERE]",
-      }),
-    }).then((response) => response.json());
-    this.setState({ comments });
-  };
-
   render() {
     return (
       <div className="App">
         <div>
-          <Navbar showSearchResult={this.showSearchResult} />
+          <Navbar showSearchResult={this.showSearchResult} defaultView={this.defaultView} />
           <Container fluid className="px-4">
             <div className="d-flex justify-content-between">
               <div className="d-flex">
