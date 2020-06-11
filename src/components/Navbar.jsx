@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Navbar, Nav, InputGroup, FormControl } from "react-bootstrap";
+import {Link} from 'react-router-dom'
 
 class NetflixNavbar extends Component {
   constructor(props) {
@@ -29,7 +30,7 @@ class NetflixNavbar extends Component {
   render() {
     return (
       <Navbar variant="dark" expand="lg" style={{ backgroundColor: "#221f1f" }}>
-        <Navbar.Brand href="/">
+        <Navbar.Brand as={Link} to="/">
           <img
             src="assets/logo.png"
             alt="logo"
@@ -68,7 +69,7 @@ class NetflixNavbar extends Component {
             </InputGroup>
             <div id="kids">KIDS</div>
             <i className="fa fa-bell icons"></i>
-            <i className="fa fa-user icons"></i>
+            <Link to='/register'><i className="fa fa-user icons"></i></Link>
           </span>
         </Navbar.Collapse>
       </Navbar>
